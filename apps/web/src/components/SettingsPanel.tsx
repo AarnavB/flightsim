@@ -4,6 +4,8 @@ import { GRAPHICS_PROFILES, PROFILE_NAMES } from "../settings/profiles";
 export function SettingsPanel(props: {
   profile: GraphicsProfileName;
   onProfileChange: (profile: GraphicsProfileName) => void;
+  sensitivity: number;
+  onSensitivityChange: (value: number) => void;
   onResetCamera: () => void;
   onClose: () => void;
 }) {
@@ -29,6 +31,18 @@ export function SettingsPanel(props: {
         <div className="control-row"><span>Look around</span><b>Mouse / trackpad drag</b></div>
         <div className="control-row"><span>Altitude</span><b>Space / Shift</b></div>
         <div className="control-row"><span>Look / reset</span><b>Arrow keys / R</b></div>
+        <label className="sensitivity-control">
+          <span><span>Movement sensitivity</span><b>{props.sensitivity.toFixed(2)}×</b></span>
+          <input
+            type="range"
+            min="0.25"
+            max="3"
+            step="0.25"
+            value={props.sensitivity}
+            onChange={(event) => props.onSensitivityChange(Number(event.target.value))}
+            aria-label="Movement sensitivity"
+          />
+        </label>
         <button className="secondary-action" onClick={props.onResetCamera}>Reset camera position</button>
       </div>
       <p className="panel-footnote">Terrain is generated locally for engineering tests. No map tiles, remote imagery or paid data APIs are requested.</p>

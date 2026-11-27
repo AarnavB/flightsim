@@ -13,6 +13,7 @@ export function WorldViewport(props: {
     <div className="world-viewport">
       <Canvas
         dpr={[0.8, props.profile.pixelRatio]}
+        shadows={props.profile.shadows}
         camera={{ fov: 62, near: 1, far: props.profile.maxDistance * 1.5, position: [0, 6_500, 15_000] }}
         gl={{ antialias: props.profile.pixelRatio >= 1, powerPreference: "high-performance", alpha: false }}
         onCreated={({ gl, scene }) => {

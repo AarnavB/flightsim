@@ -39,14 +39,22 @@ export function CameraRig() {
       const dy = event.clientY - current.y;
       current.x = event.clientX;
       current.y = event.clientY;
-      yaw.current -= dx * 0.0025;
-      pitch.current = THREE.MathUtils.clamp(pitch.current - dy * 0.0022, -1.48, 1.48);
+      yaw.current -= dx * 0.0025 * cameraMotion.sensitivity;
+      pitch.current = THREE.MathUtils.clamp(
+        pitch.current - dy * 0.0022 * cameraMotion.sensitivity,
+        -1.48,
+        1.48
+      );
     };
     const up = (event: PointerEvent) => {
       if (pointer.current?.id === event.pointerId) pointer.current = null;
     };
     const wheel = (event: WheelEvent) => {
-      speedScale.current = THREE.MathUtils.clamp(speedScale.current * Math.exp(-event.deltaY * 0.001), 0.2, 8);
+      speedScale.current = THREE.MathUtils.clamp(
+        speedScale.current * Math.exp(-event.deltaY * 0.001),
+        0.2,
+        8
+      );
     };
     const keyDown = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
@@ -90,10 +98,15 @@ export function CameraRig() {
   useFrame((_, delta) => {
     const dt = Math.min(delta, 0.05);
     const keySet = keys.current;
-    if (keySet.has("arrowleft")) yaw.current += dt * 0.8;
-    if (keySet.has("arrowright")) yaw.current -= dt * 0.8;
-    if (keySet.has("arrowup")) pitch.current = THREE.MathUtils.clamp(pitch.current + dt * 0.6, -1.48, 1.48);
-    if (keySet.has("arrowdown")) pitch.current = THREE.MathUtils.clamp(pitch.current - dt * 0.6, -1.48, 1.48);
+    const sensitivity = cameraMotion.sensitivity;
+    if (keySet.has("arrowleft")) yaw.current += dt * 0.8 * sensitivity;
+    if (keySet.has("arrowright")) yaw.current -= dt * 0.8 * sensitivity;
+    if (keySet.has("arrowup")) pitch.current = THREE.MathUtils.clamp(
+      pitch.current + dt * 0.6 * sensitivity, -1.48, 1.48
+    );
+    if (keySet.has("arrowdown")) pitch.current = THREE.MathUtils.clamp(
+      pitch.current - dt * 0.6 * sensitivity, -1.48, 1.48
+    );
 
     camera.rotation.order = "YXZ";
     camera.rotation.set(pitch.current, yaw.current, 0);
@@ -107,11 +120,15 @@ export function CameraRig() {
     if (keySet.has(" ")) movement.current.y += 1;
     if (keySet.has("shift")) movement.current.y -= 1;
     if (movement.current.lengthSq() > 0) {
-      movement.current.normalize().multiplyScalar(cameraMotion.speed * speedScale.current * dt);
+      movement.current.normalize().multiplyScalar(
+        cameraMotion.speed * sensitivity * speedScale.current * dt
+      );
       camera.position.add(movement.current);
     }
 
-    if (dt > 0) cameraMotion.velocity.subVectors(camera.position, previousPosition.current).multiplyScalar(1 / dt);
+    if (dt > 0) {
+      cameraMotion.velocity.subVectors(camera.position, previousPosition.current).multiplyScalar(1 / dt);
+    }
     previousPosition.current.copy(camera.position);
     cameraMotion.yawRate = (yaw.current - previousRotation.current.yaw) / Math.max(dt, 0.001);
     cameraMotion.pitchRate = (pitch.current - previousRotation.current.pitch) / Math.max(dt, 0.001);

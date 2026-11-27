@@ -5,10 +5,11 @@ import { SettingsPanel } from "./components/SettingsPanel";
 import { DebugPanel } from "./components/DebugPanel";
 import { GRAPHICS_PROFILES, type GraphicsProfileName } from "./settings/profiles";
 import type { StreamerStats } from "@flightsim/world-streaming";
-import { RESET_CAMERA_EVENT } from "./camera/camera-motion";
+import { RESET_CAMERA_EVENT, cameraMotion } from "./camera/camera-motion";
 
 export default function App() {
   const [profile, setProfile] = useState<GraphicsProfileName>("Medium");
+  const [sensitivity, setSensitivity] = useState(1);
   const [debug, setDebug] = useState(false);
   const [settings, setSettings] = useState(false);
   const [stats, setStats] = useState<StreamerStats | null>(null);
@@ -24,6 +25,10 @@ export default function App() {
     }
   }, []);
   const resetCamera = useCallback(() => window.dispatchEvent(new CustomEvent(RESET_CAMERA_EVENT)), []);
+  const changeSensitivity = useCallback((value: number) => {
+    cameraMotion.sensitivity = value;
+    setSensitivity(value);
+  }, []);
 
   return (
     <main className="app-shell">
@@ -47,7 +52,16 @@ export default function App() {
         {rendererReady === false && <div className="renderer-warning" role="alert">WebGL 2 is unavailable. Enable hardware acceleration or try a browser with WebGL 2 support.</div>}
         {error && <button className="toast" onClick={() => setError(null)}>{error} <span>×</span></button>}
         {debug && <DebugPanel stats={stats} />}
-        {settings && <SettingsPanel profile={profile} onProfileChange={setProfile} onResetCamera={resetCamera} onClose={() => setSettings(false)} />}
+        {settings && (
+          <SettingsPanel
+            profile={profile}
+            onProfileChange={setProfile}
+            sensitivity={sensitivity}
+            onSensitivityChange={changeSensitivity}
+            onResetCamera={resetCamera}
+            onClose={() => setSettings(false)}
+          />
+        )}
         <div className="loading-indicator" aria-live="polite">
           <span className={stats && stats.activeTileCount > 0 ? "loading-dot ready" : "loading-dot"} />
           {stats && stats.activeTileCount > 0 ? "SCENERY STREAM ACTIVE" : "GENERATING PROCEDURAL TERRAIN"}

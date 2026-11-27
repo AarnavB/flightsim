@@ -26,6 +26,7 @@ export function WorldScene(props: {
     vertexColors: true,
     roughness: 0.96,
     metalness: 0,
+    side: THREE.DoubleSide,
     polygonOffset: true,
     polygonOffsetFactor: -1,
     polygonOffsetUnits: -1
@@ -64,13 +65,24 @@ export function WorldScene(props: {
     <>
       <CameraRig />
       <hemisphereLight args={["#d7e5e9", "#39463f", 1.35]} />
-      <directionalLight position={[12_000, 18_000, 8_000]} intensity={2.1} color="#fff0d7" />
+      <directionalLight
+        position={[12_000, 18_000, 8_000]}
+        intensity={2.1}
+        color="#fff0d7"
+        castShadow={props.profile.shadows}
+      />
       <fog attach="fog" args={["#b7c8ca", props.profile.maxDistance * 0.55, props.profile.maxDistance * 1.3]} />
-      {assets.map((asset) => <TerrainTile key={asset.id} asset={asset} material={material} />)}
+      {assets.map((asset) => (
+        <mesh
+          key={asset.id}
+          geometry={asset.geometry}
+          material={material}
+          renderOrder={asset.level}
+          frustumCulled
+          receiveShadow={props.profile.shadows}
+          dispose={null}
+        />
+      ))}
     </>
   );
-}
-
-function TerrainTile({ asset, material }: { asset: TileAsset; material: THREE.Material }) {
-  return <mesh geometry={asset.geometry} material={material} renderOrder={asset.level} frustumCulled dispose={null} />;
 }
