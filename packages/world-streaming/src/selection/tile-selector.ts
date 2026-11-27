@@ -23,7 +23,8 @@ export class TileSelector {
   select(
     camera: THREE.PerspectiveCamera,
     frustum: THREE.Frustum,
-    config: SelectionConfig
+    config: SelectionConfig,
+    anchor: THREE.Vector3 = camera.position
   ): TileMetadata[] {
     const selected: TileMetadata[] = [];
     const refinedThisPass = new Set<string>();
@@ -44,7 +45,7 @@ export class TileSelector {
         Math.max(0.05, Math.cos(center.latitude * Math.PI / 180));
       const radius = Math.hypot(latitudeSpan, longitudeSpan) * 0.58 + 5_000;
       const sphere = new THREE.Sphere(new THREE.Vector3(...position), radius);
-      const distanceToSphere = Math.max(0, camera.position.distanceTo(sphere.center) - radius);
+      const distanceToSphere = Math.max(0, anchor.distanceTo(sphere.center) - radius);
 
       if (distanceToSphere > config.maxDistance || !frustum.intersectsSphere(sphere)) return;
 
@@ -67,13 +68,13 @@ export class TileSelector {
     };
 
     visit(this.tree.get("0/0/0"));
-    selected.sort((a, b) => this.distanceTo(camera, a) - this.distanceTo(camera, b));
+    selected.sort((a, b) => this.distanceTo(anchor, a) - this.distanceTo(anchor, b));
     this.previouslyRefined = refinedThisPass;
     return selected.slice(0, config.maxTiles);
   }
 
-  private distanceTo(camera: THREE.Camera, tile: TileMetadata): number {
+  private distanceTo(anchor: THREE.Vector3, tile: TileMetadata): number {
     const point = this.frame.toRender(boundsCenter(tile.bounds));
-    return camera.position.distanceToSquared(new THREE.Vector3(...point));
+    return anchor.distanceToSquared(new THREE.Vector3(...point));
   }
 }

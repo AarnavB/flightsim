@@ -32,7 +32,7 @@ export interface StreamerStats {
   frameTimeMs: number;
   geographicPosition: string;
   cameraDirection: string;
-  cameraAltitude: number;
+  streamingAnchorAltitude: number;
   activeTileCount: number;
   visibleTileCount: number;
   prefetchedTileCount: number;
@@ -79,6 +79,7 @@ export class WorldStreamer {
   private prefetchIds: string[] = [];
   private requestedIds = new Set<string>();
   private camera: THREE.PerspectiveCamera | null = null;
+  private readonly selectionAnchor = new THREE.Vector3();
   private frustum = new THREE.Frustum();
   private lastSelection = 0;
   private lastPrefetch = 0;
@@ -119,9 +120,10 @@ export class WorldStreamer {
   }
 
   /** Cheap transform/frustum refresh every frame; detailed work is throttled by profile. */
-  updateFrame(camera: THREE.PerspectiveCamera, motion: MotionLike): void {
+  updateFrame(camera: THREE.PerspectiveCamera, motion: MotionLike, anchor?: THREE.Vector3): void {
     if (this.disposed) return;
     this.camera = camera;
+    this.selectionAnchor.copy(anchor ?? camera.position);
     camera.updateMatrixWorld();
     camera.matrixWorldInverse.copy(camera.matrixWorld).invert();
     this.projectionView.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
@@ -130,7 +132,7 @@ export class WorldStreamer {
     const now = performance.now();
     if (now - this.lastSelection >= this.profile.selectionIntervalMs) {
       this.lastSelection = now;
-      this.selectAndSchedule(camera);
+      this.selectAndSchedule(camera, this.selectionAnchor);
     }
     if (now - this.lastPrefetch >= this.profile.prefetchIntervalMs) {
       this.lastPrefetch = now;
@@ -142,13 +144,13 @@ export class WorldStreamer {
     }
   }
 
-  private selectAndSchedule(camera: THREE.PerspectiveCamera): void {
+  private selectAndSchedule(camera: THREE.PerspectiveCamera, anchor: THREE.Vector3): void {
     const selected = this.selector.select(camera, this.frustum, {
       maxLod: this.profile.maxLod,
       maxDistance: this.profile.maxDistance,
       maxTiles: this.profile.name === "Low" ? 54 : 96,
       targetScreenError: this.profile.name === "Low" ? 4 : 2.8
-    });
+    }, anchor);
 
     const nextVisible = selected.map((node) => node.id);
     const nextSet = new Set(nextVisible);
@@ -209,7 +211,7 @@ export class WorldStreamer {
   private distanceTo(node: TileMetadata): number {
     if (!this.camera) return 0;
     const point = this.frame.toRender(boundsCenter(node.bounds));
-    return this.camera.position.distanceTo(new THREE.Vector3(...point));
+    return this.selectionAnchor.distanceTo(new THREE.Vector3(...point));
   }
 
   private queueTile(node: TileMetadata, priority: number): void {
@@ -389,7 +391,7 @@ export class WorldStreamer {
 
   getStats(fps = 0, renderer?: RendererCounters): StreamerStats {
     const position = this.camera
-      ? this.frame.fromRender(this.camera.position.x, this.camera.position.y, this.camera.position.z)
+      ? this.frame.fromRender(this.selectionAnchor.x, this.selectionAnchor.y, this.selectionAnchor.z)
       : this.frame.origin;
     const levels = new Map<number, number>();
 
@@ -406,7 +408,7 @@ export class WorldStreamer {
       frameTimeMs: fps > 0 ? 1000 / fps : 0,
       geographicPosition: position.latitude.toFixed(4) + ", " + position.longitude.toFixed(4),
       cameraDirection: this.renderDirection.toArray().map((value) => value.toFixed(2)).join(", "),
-      cameraAltitude: position.height,
+      streamingAnchorAltitude: position.height,
       activeTileCount: this.resources.count,
       visibleTileCount: this.visibleIds.length,
       prefetchedTileCount: this.prefetchIds.length,

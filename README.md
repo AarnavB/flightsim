@@ -78,3 +78,9 @@ GitHub Actions uses the repository's standard free allowances. If those are exha
 ## Phase boundary
 
 This milestone does not implement aircraft flight dynamics, Cessna systems, cockpit instrumentation, ATC, flight planning, live weather, voice AI or multiplayer. The terrain provider, coordinate layer, camera controller and world-streaming modules expose extension points for later milestones without coupling visual resource eviction to simulation-critical state.
+
+## Stage 2 prototype
+
+The current feature branch adds a fictional arcade flying-game prototype with an original procedural high-wing aircraft, synthetic runway/parking/airborne starts, keyboard and optional gamepad input, four game-camera modes, a game-value telemetry HUD, and a worker-driven fixed-step movement loop. Stage 1's world streamer remains in use and can take the aircraft's local ENU position as its optional streaming anchor.
+
+This is not a Cessna 172P flight model and is not intended for flight training or real-world use. Its movement, power, speed and telemetry are illustrative game mechanics. See [Stage 2 architecture and limitations](docs/phase-2/overview.md).
