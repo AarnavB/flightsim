@@ -14,10 +14,14 @@ export function WorldScene(props: {
   profile: GraphicsProfile;
   onStats: (stats: StreamerStats) => void;
 }) {
-  const { camera } = useThree();
+  const { camera, gl } = useThree();
+  const perspectiveCamera = camera as THREE.PerspectiveCamera;
   const [assets, setAssets] = useState<TileAsset[]>([]);
   const frame = useMemo(() => new LocalTangentFrame(WORLD_ORIGIN), []);
-  const streamer = useMemo(() => new WorldStreamer(new ProceduralTerrainProvider(frame), frame, props.profile), [frame]);
+  const streamer = useMemo(
+    () => new WorldStreamer(new ProceduralTerrainProvider(frame), frame, props.profile),
+    [frame]
+  );
   const material = useMemo(() => new THREE.MeshStandardMaterial({
     vertexColors: true,
     roughness: 0.96,
@@ -39,20 +43,20 @@ export function WorldScene(props: {
 
   useEffect(() => {
     streamer.setProfile(props.profile);
-    camera.far = props.profile.maxDistance * 1.5;
-    camera.updateProjectionMatrix();
-  }, [streamer, props.profile, camera]);
+    perspectiveCamera.far = props.profile.maxDistance * 1.5;
+    perspectiveCamera.updateProjectionMatrix();
+  }, [streamer, props.profile, perspectiveCamera]);
 
   const sampling = useMemo(() => ({ elapsed: 0, frames: 0 }), []);
   useFrame((_, delta) => {
-    streamer.updateFrame(camera as THREE.PerspectiveCamera, cameraMotion);
+    streamer.updateFrame(perspectiveCamera, cameraMotion);
     sampling.frames += 1;
     sampling.elapsed += delta;
     if (sampling.elapsed >= 0.5) {
       const fps = sampling.frames / sampling.elapsed;
       sampling.elapsed = 0;
       sampling.frames = 0;
-      props.onStats(streamer.getStats(fps));
+      props.onStats(streamer.getStats(fps, gl.info.render));
     }
   });
 

@@ -160,7 +160,7 @@ export class WorldStreamer {
     }
     this.visibleIds = nextVisible;
 
-    const desired = new Set<string>(this.visibleIds);
+    const baseDesired = new Set<string>(this.visibleIds);
     for (const node of selected) {
       this.queueTile(node, 1000 - this.distanceTo(node));
 
@@ -169,15 +169,15 @@ export class WorldStreamer {
       while (ancestor) {
         const ancestorNode = this.tree.get(ancestor);
         if (ancestorNode.level < MIN_RENDERABLE_LEVEL) break;
-        desired.add(ancestor);
+        baseDesired.add(ancestor);
         this.queueTile(ancestorNode, 650 - ancestorNode.level * 12);
         ancestor = parentTileId(ancestor);
       }
     }
 
-    for (const id of this.prefetchIds) desired.add(id);
+    const desired = new Set([...baseDesired, ...this.prefetchIds]);
     this.cancelUnwanted(desired);
-    this.requestedIds = desired;
+    this.requestedIds = baseDesired;
     this.publish();
   }
 
@@ -194,7 +194,6 @@ export class WorldStreamer {
 
     const desired = new Set([...this.requestedIds, ...this.prefetchIds]);
     this.cancelUnwanted(desired);
-    this.requestedIds = desired;
   }
 
   private cancelUnwanted(desired: ReadonlySet<string>): void {
@@ -355,8 +354,7 @@ export class WorldStreamer {
       }
     }
 
-    const activeAssets = new Set(result.keys());
-    this.resources.setReferences(activeAssets);
+    this.resources.setReferences(new Set(result.keys()));
     return [...result.values()].sort((a, b) => a.level - b.level);
   }
 

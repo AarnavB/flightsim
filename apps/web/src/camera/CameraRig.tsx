@@ -49,7 +49,10 @@ export function CameraRig() {
       speedScale.current = THREE.MathUtils.clamp(speedScale.current * Math.exp(-event.deltaY * 0.001), 0.2, 8);
     };
     const keyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (target && ["INPUT", "SELECT", "TEXTAREA", "BUTTON"].includes(target.tagName)) return;
       if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " "].includes(event.key)) event.preventDefault();
+      if (event.key.toLowerCase() === "r") window.dispatchEvent(new CustomEvent(RESET_CAMERA_EVENT));
       keys.current.add(event.key.toLowerCase());
     };
     const keyUp = (event: KeyboardEvent) => keys.current.delete(event.key.toLowerCase());
@@ -60,6 +63,7 @@ export function CameraRig() {
       camera.rotation.set(pitch.current, yaw.current, 0);
       cameraMotion.velocity.set(0, 0, 0);
       speedScale.current = 1;
+      previousPosition.current.copy(camera.position);
     };
     const blur = () => keys.current.clear();
 

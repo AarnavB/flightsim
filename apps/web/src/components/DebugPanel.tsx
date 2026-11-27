@@ -11,14 +11,16 @@ export function DebugPanel({ stats }: { stats: StreamerStats | null }) {
     ["FPS", stats.fps.toFixed(0)],
     ["Frame time", stats.frameTimeMs.toFixed(1) + " ms"],
     ["Geographic position", stats.geographicPosition],
+    ["Camera direction", stats.cameraDirection],
     ["Camera altitude", Math.round(stats.cameraAltitude).toLocaleString() + " m"],
     ["Resident / visible", stats.activeTileCount + " / " + stats.visibleTileCount],
     ["Prefetched / cached", stats.prefetchedTileCount + " / " + stats.cachedTileCount],
     ["Pending / failed", stats.pendingRequests + " / " + stats.failedRequests],
     ["Worker activity", stats.activeWorkers.toString()],
     ["Estimated geometry", formatBytes(stats.geometryMemoryBytes)],
+    ["Estimated CPU data", formatBytes(stats.cpuMemoryBytes)],
     ["Estimated texture", formatBytes(stats.textureMemoryBytes)],
-    ["GPU draw calls", stats.drawCalls.toString()],
+    ["Draw calls", stats.drawCalls.toLocaleString()],
     ["Triangles", stats.triangles.toLocaleString()],
     ["Terrain LODs", stats.lodSummary || "—"]
   ];
