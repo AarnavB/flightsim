@@ -1,0 +1,50 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "Bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "types": [
+      "vite/client",
+      "node"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@flightsim/geography": [
+        "packages/geography/src/index.ts"
+      ],
+      "@flightsim/terrain": [
+        "packages/terrain/src/index.ts"
+      ],
+      "@flightsim/world-streaming": [
+        "packages/world-streaming/src/index.ts"
+      ],
+      "@flightsim/shared-types": [
+        "packages/shared-types/src/index.ts"
+      ]
+    }
+  },
+  "include": [
+    "apps/web/src",
+    "packages",
+    "tests",
+    "vite.config.ts",
+    "playwright.config.ts"
+  ]
+}
