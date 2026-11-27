@@ -12,7 +12,7 @@ export function DebugPanel({ stats }: { stats: StreamerStats | null }) {
     ["Frame time", stats.frameTimeMs.toFixed(1) + " ms"],
     ["Geographic position", stats.geographicPosition],
     ["Camera direction", stats.cameraDirection],
-    ["Camera altitude", Math.round(stats.cameraAltitude).toLocaleString() + " m"],
+    ["Streaming anchor altitude", Math.round(stats.streamingAnchorAltitude).toLocaleString() + " m"],
     ["Resident / visible", stats.activeTileCount + " / " + stats.visibleTileCount],
     ["Prefetched / cached", stats.prefetchedTileCount + " / " + stats.cachedTileCount],
     ["Pending / failed", stats.pendingRequests + " / " + stats.failedRequests],
