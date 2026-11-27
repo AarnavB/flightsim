@@ -86,7 +86,7 @@ JSBSim is not integrated or claimed as supported. Stage 2's game-model interface
 From repository root:
 
 ~~~bash
-npm ci
+npm install --no-audit --no-fund
 npm run lint
 npm run typecheck
 npm test
