@@ -18,3 +18,12 @@ test("changes the graphics profile", async ({ page }) => {
   await page.getByRole("combobox", { name: "Graphics quality" }).selectOption("High");
   await expect(page.getByRole("combobox", { name: "Graphics quality" })).toHaveValue("High");
 });
+
+test("exposes adjustable movement sensitivity", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Open settings" }).click();
+  const sensitivity = page.getByRole("slider", { name: "Movement sensitivity" });
+  await expect(sensitivity).toHaveValue("1");
+  await sensitivity.fill("2");
+  await expect(sensitivity).toHaveValue("2");
+});

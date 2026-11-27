@@ -9,7 +9,7 @@ export default defineConfig({
     trace: "retain-on-failure",
     ...devices["Desktop Chrome"],
     launchOptions: {
-      args: ["--enable-webgl", "--use-gl=angle", "--use-angle=swiftshader"]
+      args: ["--enable-webgl", "--enable-unsafe-swiftshader", "--use-gl=angle", "--use-angle=swiftshader"]
     }
   },
   webServer: {
