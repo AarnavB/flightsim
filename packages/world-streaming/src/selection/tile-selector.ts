@@ -43,9 +43,9 @@ export class TileSelector {
 
       const tileSize = Math.max(latitudeSpan, longitudeSpan);
       const geometricError = tileSize / 80;
-      const focalPixels = camera.getFilmHeight() /
-        (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2));
-      const screenError = geometricError * focalPixels / Math.max(1, distanceToSphere + radius * 0.5);
+      const focalPixels = 900 / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2));
+      const screenError = geometricError * focalPixels /
+        Math.max(1, distanceToSphere + radius * 0.5);
       const refine = node.level < config.maxLod &&
         (node.level < 2 || screenError > config.targetScreenError);
 
@@ -56,8 +56,7 @@ export class TileSelector {
       }
     };
 
-    // Start with the global root. It is recursively refined before its bounds are used
-    // to reject local children, so only a camera-local branch should survive culling.
+    // Metadata is created only along branches intersecting the camera's relevant volume.
     visit(this.tree.get("0/0/0"));
     selected.sort((a, b) => this.distanceTo(camera, a) - this.distanceTo(camera, b));
     return selected.slice(0, config.maxTiles);

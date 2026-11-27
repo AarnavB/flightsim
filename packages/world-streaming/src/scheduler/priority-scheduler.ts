@@ -36,22 +36,31 @@ export class PriorityScheduler {
     return true;
   }
 
-  cancel(id: string): void {
+  cancel(id: string): "queued" | "active" | null {
     const queued = this.queue.find((task) => task.id === id);
     if (queued) {
       queued.controller.abort();
       this.queue = this.queue.filter((task) => task.id !== id);
+      return "queued";
     }
-    this.active.get(id)?.controller.abort();
+    const active = this.active.get(id);
+    if (active) {
+      active.controller.abort();
+      return "active";
+    }
+    return null;
   }
 
-  cancelWhere(keep: ReadonlySet<string>): void {
+  /** Returns queued jobs removed immediately; active jobs complete through their abort path. */
+  cancelWhere(keep: ReadonlySet<string>): string[] {
+    const removed: string[] = [];
     for (const task of [...this.queue]) {
-      if (!keep.has(task.id)) this.cancel(task.id);
+      if (!keep.has(task.id) && this.cancel(task.id) === "queued") removed.push(task.id);
     }
-    for (const id of this.active.keys()) {
+    for (const id of [...this.active.keys()]) {
       if (!keep.has(id)) this.cancel(id);
     }
+    return removed;
   }
 
   private pump(): void {
