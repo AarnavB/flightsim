@@ -13,12 +13,14 @@ function walk(path) {
     if (stat.isDirectory()) walk(full);
     else if (extensions.some((ext) => full.endsWith(ext))) {
       checked += 1;
-      const source = readFileSync(full, "utf8");
-      if (source.includes("<<<<<<<") || source.includes(">>>>>>>")) {
-        problems.push(full + ": merge-conflict marker");
-      }
-      source.split("\n").forEach((line, index) => {
-        if (/[\t ]+$/.test(line)) problems.push(full + ":" + (index + 1) + ": trailing whitespace");
+      const lines = readFileSync(full, "utf8").split("\n");
+      lines.forEach((line, index) => {
+        if (/^(<{7}|={7}|>{7})(?:\s|$)/.test(line)) {
+          problems.push(full + ":" + (index + 1) + ": merge-conflict marker");
+        }
+        if (/[\t ]+$/.test(line)) {
+          problems.push(full + ":" + (index + 1) + ": trailing whitespace");
+        }
       });
     }
   }
