@@ -2,13 +2,14 @@ import { LocalTangentFrame } from "@flightsim/geography";
 import type { GeographicCoordinate, TileBounds } from "@flightsim/shared-types";
 import type { TerrainPayload, TerrainRequest } from "../types";
 
-/** Deterministic global-coordinate development fixture; not real elevation data. */
+/** Deterministic, globally periodic development fixture; not real elevation data. */
 export function sampleProceduralElevation(latitude: number, longitude: number): number {
   const lat = latitude * Math.PI / 180;
   const lon = longitude * Math.PI / 180;
-  const continental = Math.sin(lat * 3.7) * Math.cos(lon * 2.4);
-  const ridges = Math.sin(lat * 18 + Math.sin(lon * 8) * 1.7) * Math.cos(lon * 13);
-  const detail = Math.sin(lat * 43 + lon * 29) * Math.cos(lon * 37 - lat * 11);
+  // Integer longitude harmonics make the fixture continuous at -180° / +180°.
+  const continental = Math.sin(lat * 3.7) * Math.cos(lon * 2);
+  const ridges = Math.sin(lat * 18 + Math.sin(lon * 3) * 1.7) * Math.cos(lon * 5);
+  const detail = Math.sin(lat * 43 + lon * 7) * Math.cos(lon * 9 - lat * 11);
   return 420 + continental * 760 + ridges * 380 + detail * 95;
 }
 
@@ -39,7 +40,8 @@ export function buildTerrainPayload(request: TerrainRequest): TerrainPayload {
         const b = index + 1;
         const c = index + side;
         const d = c + 1;
-        indices.push(a, c, b, b, c, d);
+        // Winding faces upward in the local ENU render frame.
+        indices.push(a, b, c, b, d, c);
       }
     }
   }
@@ -67,8 +69,8 @@ export function buildTerrainPayload(request: TerrainRequest): TerrainPayload {
     }
     for (let i = 0; i < edge.length - 1; i += 1) {
       indices.push(
-        edge[i], skirtVertices[i], edge[i + 1],
-        edge[i + 1], skirtVertices[i], skirtVertices[i + 1]
+        edge[i], edge[i + 1], skirtVertices[i],
+        edge[i + 1], skirtVertices[i + 1], skirtVertices[i]
       );
     }
   }

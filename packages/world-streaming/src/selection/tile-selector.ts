@@ -11,7 +11,13 @@ export interface SelectionConfig {
   targetScreenError: number;
 }
 
+/**
+ * Hierarchical frustum / distance selector with screen-space-error LOD and
+ * a two-threshold hysteresis band to avoid rapid oscillation near boundaries.
+ */
 export class TileSelector {
+  private previouslyRefined = new Set<string>();
+
   constructor(private readonly tree: TileTree, private readonly frame: LocalTangentFrame) {}
 
   select(
@@ -20,6 +26,7 @@ export class TileSelector {
     config: SelectionConfig
   ): TileMetadata[] {
     const selected: TileMetadata[] = [];
+    const refinedThisPass = new Set<string>();
     let visited = 0;
     const maxVisited = Math.max(256, config.maxTiles * 48);
 
@@ -46,19 +53,22 @@ export class TileSelector {
       const focalPixels = 900 / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2));
       const screenError = geometricError * focalPixels /
         Math.max(1, distanceToSphere + radius * 0.5);
+      const wasRefined = this.previouslyRefined.has(node.id);
+      const threshold = config.targetScreenError * (wasRefined ? 0.8 : 1.2);
       const refine = node.level < config.maxLod &&
-        (node.level < 2 || screenError > config.targetScreenError);
+        (node.level < 2 || screenError > threshold);
 
       if (refine) {
+        refinedThisPass.add(node.id);
         for (const child of this.tree.children(node.id)) visit(child);
       } else {
         selected.push(node);
       }
     };
 
-    // Metadata is created only along branches intersecting the camera's relevant volume.
     visit(this.tree.get("0/0/0"));
     selected.sort((a, b) => this.distanceTo(camera, a) - this.distanceTo(camera, b));
+    this.previouslyRefined = refinedThisPass;
     return selected.slice(0, config.maxTiles);
   }
 
