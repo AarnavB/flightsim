@@ -4,17 +4,24 @@ export interface CacheEntry<T> {
   bytes: number;
 }
 
+/** LRU recency uses a monotonic logical clock so same-millisecond accesses remain ordered. */
 export class LruCache<T> {
   private readonly entriesMap = new Map<string, CacheEntry<T>>();
+  private logicalClock = 0;
+
+  private tick(): number {
+    this.logicalClock = Math.max(Date.now(), this.logicalClock + 1);
+    return this.logicalClock;
+  }
 
   set(id: string, value: T, bytes: number): void {
-    this.entriesMap.set(id, { value, bytes, lastUsedAt: Date.now() });
+    this.entriesMap.set(id, { value, bytes, lastUsedAt: this.tick() });
   }
 
   get(id: string): T | undefined {
     const entry = this.entriesMap.get(id);
     if (!entry) return undefined;
-    entry.lastUsedAt = Date.now();
+    entry.lastUsedAt = this.tick();
     return entry.value;
   }
 
