@@ -54,7 +54,7 @@ npm run test:e2e
 npm run build
 ~~~
 
-CI installs Chromium and runs all checks on pushes to the Phase 1 branch and on pull requests targeting `main`.
+CI installs Chromium and runs all checks on pushes to `main`, `phase-1/**`, `stage-2/**` and `stage-3/**`, plus pull requests targeting `main`, `phase-1/**` or `stage-2/**`.
 
 ## Zero-cost operation
 
@@ -77,10 +77,25 @@ GitHub Actions uses the repository's standard free allowances. If those are exha
 
 ## Phase boundary
 
-This milestone does not implement aircraft flight dynamics, Cessna systems, cockpit instrumentation, ATC, flight planning, live weather, voice AI or multiplayer. The terrain provider, coordinate layer, camera controller and world-streaming modules expose extension points for later milestones without coupling visual resource eviction to simulation-critical state.
+Stage 1 remains the geographic rendering and streaming foundation. Stage 3 adds an approximate local aircraft simulation and profile-driven systems prototype; it does not implement validated real-aircraft performance, operating procedures, global navigation, detailed collision/landing-gear physics, a full C172P cockpit, ATC, flight planning, live weather, voice AI or multiplayer. Terrain and camera presentation remain decoupled from simulation-critical state.
 
-## Stage 2 prototype
+## Stage 2 prototype (historical)
 
 The current feature branch adds a fictional arcade flying-game prototype with an original procedural high-wing aircraft, synthetic runway/parking/airborne starts, keyboard and optional gamepad input, four game-camera modes, a game-value telemetry HUD, and a worker-driven fixed-step movement loop. Stage 1's world streamer remains in use and can take the aircraft's local ENU position as its optional streaming anchor.
 
 This is not a Cessna 172P flight model and is not intended for flight training or real-world use. Its movement, power, speed and telemetry are illustrative game mechanics. See [Stage 2 architecture and limitations](docs/phase-2/overview.md).
+
+
+## Stage 3 — Flight dynamics and aircraft systems
+
+Stage 3 replaces the arcade worker with a worker-owned, fixed-step simulation foundation and a systems-driven educational interface.
+
+- A 120 Hz accumulator drives a quaternion-based six-degree-of-freedom rigid-body approximation. Rendering remains independent; worker snapshots publish at approximately 12 Hz.
+- The current aircraft profile is a **simulated 1981 Cessna 172P configuration** with one Avco Lycoming O-320-D2J piston-engine model, fixed-pitch propeller configuration, and battery/alternator/starter, fuel, ignition and avionics subsystems. It has **no APU**.
+- A separate fictional profile exercises optional APU and multi-engine interfaces. It is not a representation of a real aircraft.
+- The toggleable Startup Guide reports readiness from the authoritative worker snapshot; it cannot manually mark a system complete.
+- Standalone environment and propulsion modules provide local atmosphere settings and an explicitly approximate fixed-pitch thrust calculation.
+- The HUD, aircraft movement and streaming anchor consume the same simulation snapshot. Camera and world-streaming code remain separate from physics.
+- The model uses explicit approximations and unverified tuning values. It is not manufacturer-calibrated, validated, certified or suitable for flight training or real-world decisions.
+
+See [Stage 3 architecture and limitations](docs/phase-3/overview.md). No new npm dependencies, paid APIs, online runtime services or third-party aircraft assets are introduced in Stage 3.

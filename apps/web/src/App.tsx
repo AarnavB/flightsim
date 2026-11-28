@@ -5,6 +5,7 @@ import { SettingsPanel } from "./components/SettingsPanel";
 import { DebugPanel } from "./components/DebugPanel";
 import { FlightHud } from "./components/FlightHud";
 import { FlightPanel } from "./components/FlightPanel";
+import { StartupGuide } from "./components/StartupGuide";
 import { GRAPHICS_PROFILES, type GraphicsProfileName } from "./settings/profiles";
 import type { StreamerStats } from "@flightsim/world-streaming";
 import type { ArcadeControls, ArcadeSnapshot, SpawnPreset } from "./simulation/arcade-flight";
@@ -27,6 +28,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [cameraMode, setCameraMode] = useState<CameraMode>("chase");
   const [hudVisible, setHudVisible] = useState(true);
+  const [guideVisible, setGuideVisible] = useState(true);
   const keys = useRef(new Set<string>());
   const menusActive = useRef(false);
   menusActive.current = settings || debug;
@@ -95,7 +97,7 @@ export default function App() {
     const keyDown = (event: KeyboardEvent) => {
       if (activeElementIsControl(event.target)) return;
       const key = event.key.toLowerCase();
-      if (menusActive.current && key !== "h" && key !== "escape") return;
+      if (menusActive.current && key !== "h" && key !== "g" && key !== "escape") return;
       if (["arrowup", "arrowdown", "arrowleft", "arrowright", " ", "escape"].includes(key)) event.preventDefault();
       if (["arrowup", "arrowdown", "arrowleft", "arrowright", " ", "a", "d", "w", "s"].includes(key)) keys.current.add(key);
       if (event.repeat) return;
@@ -103,6 +105,7 @@ export default function App() {
       if (key === "escape") send({ type: "toggle-pause" });
       if (key === "r") send({ type: "reset" });
       if (key === "h") setHudVisible((value) => !value);
+      if (key === "g") setGuideVisible((value) => !value);
       if (key === "v") setCameraMode((value) => cameraModes[(cameraModes.indexOf(value) + 1) % cameraModes.length]);
       if (/^[1-4]$/.test(key)) setCameraMode(cameraModes[Number(key) - 1]);
     };
@@ -163,13 +166,27 @@ export default function App() {
         <FlightPanel
           snapshot={snapshot}
           spawn={spawn}
-          togglePower={() => send({ type: "toggle-power" })}
+          togglePower={() => send({ type: "toggle-master" })}
           togglePause={togglePause}
           reset={reset}
           cameraMode={cameraMode}
           setCameraMode={setCameraMode}
           hudVisible={hudVisible}
           setHudVisible={setHudVisible}
+          guideVisible={guideVisible}
+          toggleGuide={() => setGuideVisible((value) => !value)}
+        />
+        <StartupGuide
+          snapshot={snapshot}
+          visible={guideVisible}
+          onToggleMaster={() => send({ type: "toggle-master" })}
+          onToggleFuel={() => send({ type: "toggle-fuel" })}
+          onToggleIgnition={() => send({ type: "toggle-ignition" })}
+          onToggleAvionics={() => send({ type: "toggle-avionics" })}
+          onStartEngine={() => send({ type: "start-request" })}
+          onShutdownEngine={() => send({ type: "engine-shutdown" })}
+          onRestartSimulation={reset}
+          onClose={() => setGuideVisible(false)}
         />
         <div className="flight-readout">
           <div><span className="eyebrow">WORLD REFERENCE</span><b>WGS84 / LOCAL ENU</b></div>
@@ -197,9 +214,9 @@ export default function App() {
         </div>
       </section>
       <footer className="statusbar">
-        <span>STAGE 02 <b>ARCADE FLIGHT PROTOTYPE</b></span>
+        <span>STAGE 03 <b>FLIGHT SYSTEMS SIMULATION</b></span>
         <span>{profile.toUpperCase()} PROFILE <i /> {stats ? stats.visibleTileCount + " VISIBLE TILES" : "SELECTING TILES"}</span>
-        <span>BUILD 0.2.0 <i /> SYNTHETIC WORLD</span>
+        <span>BUILD 0.3.0 <i /> APPROXIMATE SIMULATION</span>
       </footer>
     </main>
   );
