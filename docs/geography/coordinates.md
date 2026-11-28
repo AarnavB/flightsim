@@ -31,3 +31,17 @@ The tree is sparse: only metadata traversed by the current selector or prefetch 
 ## Accuracy limits
 
 The local tangent plane is intended for rendering around the current regional prototype. It is not a high-precision global map projection and must not be used as aircraft navigation, collision or flight-planning truth. Geodesic distance, terrain elevation accuracy and coordinate datum transformations for imported datasets need dedicated validation when real data sources are introduced.
+
+
+## Stage 3 aircraft-body and simulation coordinates
+
+The Stage 3 rigid-body core uses a conventional local NED (north, east, down) navigation frame and an aircraft body FRD frame:
+
+- Body X = forward, body Y = right, body Z = down.
+- The body-to-NED attitude is integrated as a normalised quaternion.
+- Position and velocity are transformed into the existing Three.js render frame as X = east, Y = up, Z = south.
+- The conversion from NED to render coordinates is `render = (east, up, south) = (ned.y, -ned.z, -ned.x)`.
+
+Aerodynamic forces and angular moments are evaluated in body coordinates. Gravity is transformed from NED into body coordinates before the translational equations are integrated. Wind is configured as local east and north components and transformed through the same frame contract.
+
+The simulation position remains local to the current synthetic scene origin. This milestone does not claim global geodesic navigation, Earth-rotation modelling, certified instrument values or high-precision terrain-relative altitude. Do not reinterpret the local simulation coordinates as a real navigation solution.

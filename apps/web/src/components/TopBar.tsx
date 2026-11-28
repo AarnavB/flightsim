@@ -14,7 +14,7 @@ export function TopBar(props: {
         <div className="brand-mark"><span /><span /><span /></div>
         <div>
           <div className="brand-title">PROJECT <b>FLIGHTSIM</b></div>
-          <div className="brand-subtitle">STAGE 02 / ARCADE FLIGHT</div>
+          <div className="brand-subtitle">STAGE 03 / FLIGHT SYSTEMS</div>
         </div>
       </div>
       <div className="topbar-center"><span className="status-dot" /> SYNTHETIC FLIGHT WORLD <i /> LOCAL SIMULATION</div>

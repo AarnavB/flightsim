@@ -105,3 +105,52 @@ button{cursor:pointer}
 .renderer-warning,.toast{z-index:8}
 @media(max-width:960px){.flight-panel{width:250px;right:10px;top:10px;padding:12px;max-height:calc(100% - 20px)}.flight-hud{left:10px;top:auto;bottom:54px;width:220px}.flight-readout{left:10px;top:10px;max-width:calc(100% - 275px);gap:8px;padding:9px}.flight-readout b{font-size:8px}.loading-indicator{right:270px;bottom:10px}}
 @media(max-width:640px){.flight-panel{width:220px;max-height:57%;font-size:9px}.flight-panel-head h2{font-size:12px}.flight-hud{width:190px;bottom:49px;padding:10px}.flight-metric b{font-size:14px}.flight-metric span{font-size:7px}.flight-readout>i,.flight-readout>div:nth-of-type(3){display:none}.flight-readout{max-width:calc(100% - 240px)}.loading-indicator{right:10px;bottom:10px}.flight-button-row{gap:5px}.control-guide{gap:6px}.control-guide kbd{min-width:42px}}
+
+/* Stage 3 systems guide and instrument presentation. */
+.startup-guide{position:absolute;z-index:5;left:18px;bottom:18px;width:360px;max-height:calc(100% - 36px);overflow:auto;padding:16px;background:rgba(8,15,22,.95);border:1px solid #8ea6b355;box-shadow:0 18px 55px #0008;backdrop-filter:blur(18px);color:#e8eef2}
+.startup-guide-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:13px}
+.startup-guide-header h2{font-size:14px;letter-spacing:1px;margin:5px 0 0}
+.startup-phase{display:flex;flex-direction:column;gap:5px;padding:11px;background:#17242d;border:1px solid #344854}
+.startup-phase span,.startup-progress span,.startup-apu span{font:8px ui-monospace,monospace;letter-spacing:1px;color:#8296a1}
+.startup-phase b{font:11px ui-monospace,monospace;color:#bfe5d4;letter-spacing:.7px}
+.startup-progress{margin:12px 0}
+.startup-progress>div{display:flex;justify-content:space-between;margin-bottom:7px}
+.startup-progress>div b{font:9px ui-monospace,monospace;color:#dbe8eb}
+.startup-progress>i{height:4px;display:block;background:#263943}
+.startup-progress>i span{display:block;height:100%;background:#80bda5;transition:width .15s}
+.startup-guide-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.startup-guide-actions button,.startup-guide-footer button,.startup-section-heading button{min-height:30px;padding:6px 7px;background:#14232c;border:1px solid #405662;color:#dce7eb;font:8px ui-monospace,monospace;letter-spacing:.45px}
+.startup-guide-actions button:hover,.startup-guide-footer button:hover{background:#203743;border-color:#80a1b0}
+.startup-guide-actions button[aria-pressed="true"]{border-color:#659c86;color:#bfe5d4;background:#142b27}
+.startup-guide-actions button:disabled{opacity:.65;cursor:default}
+.startup-blocked{margin:10px 0 0;padding:8px 9px;background:#2a2118;border-left:2px solid #c69b60;color:#f0d7b2;font-size:9px;line-height:1.5}
+.startup-steps{margin-top:13px}
+.startup-section-heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.startup-section-heading>b{font-size:10px;color:#dce6ea}
+.startup-section-heading button{min-height:22px;font-size:7px}
+.startup-step{display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-top:1px solid #293842}
+.step-indicator{flex:0 0 17px;width:17px;height:17px;display:grid;place-items:center;border:1px solid #526671;color:#94a5ad;font:10px ui-monospace,monospace}
+.step-indicator.complete{border-color:#659c86;color:#bfe5d4;background:#142b27}
+.step-indicator.blocked{border-color:#b88d58;color:#efc994;background:#302419}
+.startup-step>div{display:flex;flex-direction:column;gap:4px;min-width:0}
+.startup-step b{font-size:9px;color:#e2eaed;font-weight:600}
+.startup-step small{font-size:8px;line-height:1.45;color:#8fa1ab}
+.startup-detail{border-top:1px solid #293842;padding:8px 0;color:#b9c6cc}
+.startup-detail summary{font-size:9px;cursor:pointer}
+.startup-detail p{font-size:8px;line-height:1.55;color:#82959f;margin:7px 0 0}
+.startup-apu{display:flex;justify-content:space-between;padding:9px 0;border-top:1px solid #293842}
+.startup-apu b{font:9px ui-monospace,monospace;color:#bfe5d4}
+.startup-beginner{display:flex;align-items:center;gap:7px;color:#9fb0b9;font-size:9px;margin-top:10px}
+.startup-beginner input{accent-color:#8bbbaa}
+.startup-note{color:#748894;font-size:8px;line-height:1.55;margin:10px 0}
+.startup-guide-footer{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.startup-guide-footer button:last-child{border-color:#659c86;color:#c0e2d4}
+.startup-guide-toggle{width:100%;height:32px;margin-top:7px;background:#1b3036;border:1px solid #648e8b;color:#c7e8de;font:8px ui-monospace,monospace;letter-spacing:.7px}
+.startup-guide-toggle.active{background:#142b27}
+.hud-system-row{display:flex;justify-content:space-between;gap:5px;margin-top:10px;padding-top:9px;border-top:1px solid #d5e3e520;color:#81949e;font:7px ui-monospace,monospace}
+.hud-system-row b{color:#dce8eb;font-weight:500}
+.hud-warnings{display:flex;flex-direction:column;gap:4px;margin-top:9px}
+.hud-warnings span{padding:5px 7px;background:#33271c;border-left:2px solid #c89a60;color:#f0d7b2;font:7px ui-monospace,monospace;line-height:1.4}
+.flight-panel .control-guide kbd{min-width:48px}
+@media(max-width:960px){.startup-guide{left:10px;bottom:10px;width:330px;max-height:calc(100% - 20px);padding:12px}.flight-hud{top:10px;bottom:auto}.startup-guide-actions button{font-size:7px}}
+@media(max-width:640px){.startup-guide{width:min(320px,calc(100% - 240px));max-height:45%;left:8px;bottom:8px;padding:9px}.startup-guide-header h2{font-size:11px}.startup-phase{padding:7px}.startup-guide-actions{grid-template-columns:1fr}.startup-guide-actions button{min-height:26px}.startup-note,.startup-step small{font-size:7px}.startup-guide-footer button{font-size:7px}.hud-system-row{font-size:6px}}

@@ -2,12 +2,13 @@ name: FlightSim validation
 
 on:
   pull_request:
-    branches: [main, "phase-1/**"]
+    branches: [main, "phase-1/**", "stage-2/**"]
   push:
     branches:
       - main
       - "phase-1/**"
       - "stage-2/**"
+      - "stage-3/**"
 
 permissions:
   contents: read
