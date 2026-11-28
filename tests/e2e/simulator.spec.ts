@@ -33,7 +33,7 @@ test("shows aircraft controls and the toggleable systems guide", async ({ page }
   await page.goto("/");
   await expect(page.getByRole("complementary", { name: "Aircraft controls" })).toBeVisible();
   await expect(page.getByRole("complementary", { name: "Startup guide" })).toBeVisible();
-  await page.getByRole("button", { name: "Hide startup guide" }).click();
+  await page.getByRole("button", { name: "HIDE STARTUP GUIDE", exact: true }).click();
   await expect(page.getByRole("complementary", { name: "Startup guide" })).toHaveCount(0);
   await page.getByRole("button", { name: "OPEN STARTUP GUIDE" }).click();
   await expect(page.getByRole("complementary", { name: "Startup guide" })).toBeVisible();
